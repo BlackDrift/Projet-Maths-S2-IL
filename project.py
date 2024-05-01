@@ -4,6 +4,29 @@ import math
 
 plt.style.use('_mpl-gallery')
 
+listePoints = [(2, 3, -0.2), (2, 7, 1), (4, 7, -0.2), (6, 7, 0.2), (4, 9, -1), (8, 9, -5/3), (8, 7, 1), (9, 5, 0.6), (6, 3, 5/3), (6, 2, -0.4)]
+
+def interpolationHermite(point1:tuple,point2:tuple)->list:
+    X = []
+    Y = []
+    H = 0
+    d = int(math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2))
+    print(d)
+    for x in range(1, d * 100 + 1):
+        H = (point1[1] * ((x / 100 - point1[0])/(point2[0]-point1[0]) - 1) ** 2 * (2 * (x / 100 - point1[0])/(point2[0]-point1[0]) + 1) ) + (point2[1] * (x / 100 - point1[0])/(point2[0]-point1[0])** 2 * (-2 * (x / 100 - point1[0])/(point2[0]-point1[0]) + 3) ) + (point1[2] * (x / 100 - point1[0])/(point2[0]-point1[0]) * (((x / 100 - point1[0])/(point2[0]-point1[0]) - 1) ** 2) ) + (point2[2] * ((x / 100 - point1[0])/(point2[0]-point1[0]) - 1) ** 2 * (2 * (x / 100 - point1[0])/(point2[0]-point1[0]) + 1) )
+        X.append(x/100)
+        Y.append(H)
+    print(X) 
+    print(Y)
+
+# def penteTangente():
+#     pT = []
+    
+#     for i in range(len(listePoints)):
+#         pT.append(())
+
+interpolationHermite(listePoints[1],listePoints[2])
+'''
 def droite():
     x = []
     y = []
@@ -75,7 +98,7 @@ def lagrange(points, x):
         P += l * points[i][1]
     return P
 
-'''
+
 float lagrange(float[] points, float x)
 {
     float P = 0;
@@ -93,10 +116,11 @@ float lagrange(float[] points, float x)
     }
     return P;
 }
-'''
+
 #droite()
 #parabole()
 #paraboleTournee()
 x = np.linspace(-15, 16, 30)
 plt.plot (x, lagrange([[0,1],[math.pi/2, 0],[math.pi, -1],[math.pi*2, 0]],x))
 plt.show()
+'''
