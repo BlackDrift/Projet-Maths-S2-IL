@@ -5,19 +5,44 @@ import math
 plt.style.use('_mpl-gallery')
 
 listePoints = [(2, 3, -0.2), (2, 7, 1), (4, 7, -0.2), (6, 7, 0.2), (4, 9, -1), (8, 9, -5/3), (8, 7, 1), (9, 5, 0.6), (6, 3, 5/3), (6, 2, -0.4)]
-
-def interpolationHermite(point1:tuple,point2:tuple)->list:
+allXPoints = []
+allYPoints = []
+def interpolationHermite(point1:tuple,point2:tuple, nombrePoints:int)->None:
     X = []
     Y = []
+    X.append(point1[0])
+    Y.append(point1[1])
     H = 0
     d = int(math.sqrt((point2[0] - point1[0])**2 + (point2[1] - point1[1])**2))
     print(d)
-    for x in range(1, d * 100 + 1):
-        H = (point1[1] * ((x / 100 - point1[0])/(point2[0]-point1[0]) - 1) ** 2 * (2 * (x / 100 - point1[0])/(point2[0]-point1[0]) + 1) ) + (point2[1] * (x / 100 - point1[0])/(point2[0]-point1[0])** 2 * (-2 * (x / 100 - point1[0])/(point2[0]-point1[0]) + 3) ) + (point1[2] * (x / 100 - point1[0])/(point2[0]-point1[0]) * (((x / 100 - point1[0])/(point2[0]-point1[0]) - 1) ** 2) ) + (point2[2] * ((x / 100 - point1[0])/(point2[0]-point1[0]) - 1) ** 2 * (2 * (x / 100 - point1[0])/(point2[0]-point1[0]) + 1) )
-        X.append(x/100)
-        Y.append(H)
+    if point1[0] != point2[0]:
+        for x in range(1, nombrePoints + 1):
+            t = ((x / 100) - point1[0])/(point2[0] - point1[0])
+            f1 = ((t - 1) ** 2) * (2 * t + 1)
+            f2 = t ** 2 * (-2 * t + 3)
+            f3 = t * ((t - 1) ** 2)
+            f4 = (t ** 2) * (t - 1)
+            H = point1[1] * f1 + point2[1] * f2 + point1[2] * f3 + point2[2] * f4
+            X.append(point1[0] - (x / nombrePoints))
+            Y.append(H)
+    else :
+        for x in range(1, nombrePoints + 1):
+            a0 = point1[1]
+            a1 = point1[2]
+            a2 = point1[2]
+            a3 = 0
+            H = a0 + a1 * ((x / 100) - point1[0]) + a2 * ((x / 100) - point1[0]) ** 2 + a3 * ((x / 100) - point1[0]) ** 3
+            X.append(point1[0] - (x / nombrePoints))
+            Y.append(H)
     print(X) 
     print(Y)
+    allXPoints.append(X)
+    allYPoints.append(Y)
+
+def afficheForme(listeAbscisses=allXPoints, listeOrdonnees=allYPoints):
+    for x in range(len(listeAbscisses)):
+        plt.plot(listeAbscisses[x],listeOrdonnees[x])
+    plt.show()
 
 # def penteTangente():
 #     pT = []
@@ -25,7 +50,35 @@ def interpolationHermite(point1:tuple,point2:tuple)->list:
 #     for i in range(len(listePoints)):
 #         pT.append(())
 
-interpolationHermite(listePoints[1],listePoints[2])
+interpolationHermite(listePoints[1],listePoints[2], 100)
+interpolationHermite(listePoints[2],listePoints[3], 100)
+#afficheForme()
+print('\n')
+interpolationHermite(listePoints[0],listePoints[1], 100)
+
+# la masse est celle d'un SNA Type Rubis, de 2 670 tonnes en plongée
+# la force moteur (de poussée) a été calculée comme une division de la puissance (en W) du moteur (de 0.5x10^7 ) par la vitesse de l'hélice, qui après calcul et recherches a été trouvée come égale à 20.94 m/s
+def Nautilus(masse = 2670000, forceMoteur = 238777, distance = 1000, temps=150):
+    #on sait que la somme des forces extérieures est égale au produit de la masse et de l'accéleration
+    #mais également que ces forces extérieures peuvent se résumer à la poussée moteur elle-même
+    #en partant du principe que les frottements dans l'eau sont négligeables et que le Poids et la Poussée d'archimède s'annulent
+    accel = forceMoteur / masse
+    print("L'accélération est de :" + str(accel) + "m/s².") #l'accélération avec les valeurs par défaut devrait être environ égale à 0.09 m/s² 
+    #l'accéleration étant désormais calculée, on peut donc en déduire la vitesse, sachant que l'on part du principe que notre sous-marin parcourt 1000 m
+    #le calcul de la vitesse comprend normalement la vitesse initiale sommée au produit de 2x l'accélération x la distance totale parcourue
+    vitesse = math.sqrt(2 * accel * distance)
+    print("La vitesse obtenue est de : " + str(vitesse) + "m/s.") #la vitesse devrait être environ égale à 13 m/s.
+    #le Nautilus vient d'être mis à flots au bord du quai, qui est notre origine du repère.
+    X = [0]
+    Y = [0]
+    for i in range(1, temps):
+        X.append(i)
+        Y.append(Y[i - 1] - vitesse * i - 0.5 * accel * i**2)
+    plt.plot(X,Y)   
+    plt.show() 
+
+Nautilus()
+
 '''
 def droite():
     x = []
